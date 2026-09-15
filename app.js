@@ -1,0 +1,168 @@
+(function () {
+  var TRACK_ORDER = ["foundations", "structures", "advanced-structures", "patterns", "graphs", "dynamic-programming"];
+
+  var TRACK_DESC = {
+    "foundations": "The cost model, recursion, and proof habits that let you predict whether an approach can work.",
+    "structures": "Arrays, hashes, linked lists, stacks, queues, trees, heaps, and tries — choose the shape before the algorithm.",
+    "advanced-structures": "Deques, search trees, range-query structures, caches, and probabilistic membership structures.",
+    "patterns": "Reusable moves for sorting, searching, intervals, recursion, and greedy choices.",
+    "graphs": "Model relationships, traverse safely, and choose the right shortest-path or connectivity tool.",
+    "dynamic-programming": "Turn repeated recursive work into a state, a transition, and an answer."
+  };
+
+  function content() {
+    return window.SITE_CONTENT || {};
+  }
+
+  function buildSidebar() {
+    var nav = document.getElementById("sidebar-nav");
+    nav.innerHTML = "";
+    TRACK_ORDER.forEach(function (key) {
+      var data = content()[key];
+      if (!data) return;
+
+      var track = document.createElement("div");
+      track.className = "track";
+
+      var title = document.createElement("a");
+      title.className = "track-title";
+      title.href = "#" + key;
+      title.textContent = data.track;
+      track.appendChild(title);
+
+      var list = document.createElement("ul");
+      list.className = "step-list";
+      data.steps.forEach(function (step, i) {
+        var li = document.createElement("li");
+        var a = document.createElement("a");
+        a.href = "#" + key + "/" + step.id;
+        a.dataset.track = key;
+        a.dataset.step = step.id;
+        var badge = document.createElement("span");
+        badge.className = "step-num-badge";
+        badge.textContent = (i + 1) + ".";
+        a.appendChild(badge);
+        a.appendChild(document.createTextNode(" " + step.title));
+        li.appendChild(a);
+        list.appendChild(li);
+      });
+      track.appendChild(list);
+      nav.appendChild(track);
+    });
+  }
+
+  function buildTopbarTracks() {
+    var nav = document.getElementById("topbar-tracks");
+    nav.innerHTML = "";
+    TRACK_ORDER.forEach(function (key) {
+      var data = content()[key];
+      if (!data) return;
+      var a = document.createElement("a");
+      a.href = "#" + key;
+      a.dataset.track = key;
+      a.textContent = data.track;
+      nav.appendChild(a);
+    });
+  }
+
+  function renderHome() {
+    var pane = document.getElementById("content-pane");
+    var html = '<h1>DSA, from First Principles</h1>';
+    html += '<p class="subtitle">Every efficient solution begins with a model: what is stored, what changes, and what work is unavoidable. Pick a track.</p>';
+    html += '<div class="landing-cards">';
+    TRACK_ORDER.forEach(function (key) {
+      var data = content()[key];
+      if (!data) return;
+      html += '<a class="landing-card" href="#' + key + '">' +
+        '<span class="title">' + data.track + '</span>' +
+        '<span class="desc">' + TRACK_DESC[key] + '</span>' +
+        '</a>';
+    });
+    html += '</div>';
+    pane.innerHTML = html;
+  }
+
+  function renderStep(trackKey, stepId) {
+    var data = content()[trackKey];
+    if (!data) { renderHome(); return; }
+
+    var idx = data.steps.findIndex(function (s) { return s.id === stepId; });
+    if (idx === -1) idx = 0;
+    var step = data.steps[idx];
+
+    var pane = document.getElementById("content-pane");
+    var html = '<div class="crumb"><a href="#">DSA, from First Principles</a><span class="sep">&rsaquo;</span><a href="#' + trackKey + '">' + data.track + '</a><span class="sep">&rsaquo;</span>Step ' + (idx + 1) + ' of ' + data.steps.length + '</div>';
+    html += '<h1>' + step.title + '</h1>';
+    html += step.body;
+
+    html += '<div class="step-nav">';
+    if (idx > 0) {
+      var prev = data.steps[idx - 1];
+      html += '<a class="prev" href="#' + trackKey + '/' + prev.id + '"><span class="dir">Previous</span>' + prev.title + '</a>';
+    } else {
+      html += '<span class="placeholder"></span>';
+    }
+    if (idx < data.steps.length - 1) {
+      var next = data.steps[idx + 1];
+      html += '<a class="next" href="#' + trackKey + '/' + next.id + '"><span class="dir">Next</span>' + next.title + '</a>';
+    } else {
+      html += '<span class="placeholder"></span>';
+    }
+    html += '</div>';
+
+    pane.innerHTML = html;
+    highlightActive(trackKey, step.id);
+    window.scrollTo(0, 0);
+    document.getElementById("content-pane").scrollTo && document.getElementById("content-pane").scrollTo(0, 0);
+  }
+
+  function highlightActive(trackKey, stepId) {
+    var links = document.querySelectorAll(".step-list a");
+    links.forEach(function (a) {
+      a.classList.toggle("active", a.dataset.track === trackKey && a.dataset.step === stepId);
+    });
+    var topLinks = document.querySelectorAll(".topbar-tracks a");
+    topLinks.forEach(function (a) {
+      a.classList.toggle("active", a.dataset.track === trackKey);
+    });
+  }
+
+  function route() {
+    var hash = location.hash.replace(/^#/, "");
+    if (!hash) { renderHome(); highlightActive(null, null); return; }
+    var parts = hash.split("/");
+    var trackKey = parts[0];
+    var stepId = parts[1];
+    if (!content()[trackKey]) { renderHome(); return; }
+    if (!stepId) {
+      renderStep(trackKey, content()[trackKey].steps[0].id);
+    } else {
+      renderStep(trackKey, stepId);
+    }
+    closeSidebarMobile();
+  }
+
+  function closeSidebarMobile() {
+    var sidebar = document.getElementById("sidebar");
+    var overlay = document.getElementById("sidebar-overlay");
+    sidebar.classList.remove("open");
+    overlay.classList.remove("open");
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    buildSidebar();
+    buildTopbarTracks();
+    route();
+
+    var toggle = document.getElementById("sidebar-toggle");
+    var sidebar = document.getElementById("sidebar");
+    var overlay = document.getElementById("sidebar-overlay");
+    toggle.addEventListener("click", function () {
+      sidebar.classList.toggle("open");
+      overlay.classList.toggle("open");
+    });
+    overlay.addEventListener("click", closeSidebarMobile);
+  });
+
+  window.addEventListener("hashchange", route);
+})();
