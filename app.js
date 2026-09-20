@@ -21,17 +21,24 @@
       var data = content()[key];
       if (!data) return;
 
-      var track = document.createElement("div");
-      track.className = "track";
+      var track = document.createElement("section");
+      track.className = "track collapsed";
+      track.dataset.track = key;
 
-      var title = document.createElement("a");
+      var title = document.createElement("button");
+      title.type = "button";
       title.className = "track-title";
-      title.href = "#" + key;
       title.textContent = data.track;
+      title.setAttribute("aria-expanded", "false");
+      title.setAttribute("aria-controls", "track-" + key);
+      title.addEventListener("click", function () {
+        setTrackExpanded(track, track.classList.contains("collapsed"));
+      });
       track.appendChild(title);
 
       var list = document.createElement("ul");
       list.className = "step-list";
+      list.id = "track-" + key;
       data.steps.forEach(function (step, i) {
         var li = document.createElement("li");
         var a = document.createElement("a");
@@ -51,18 +58,10 @@
     });
   }
 
-  function buildTopbarTracks() {
-    var nav = document.getElementById("topbar-tracks");
-    nav.innerHTML = "";
-    TRACK_ORDER.forEach(function (key) {
-      var data = content()[key];
-      if (!data) return;
-      var a = document.createElement("a");
-      a.href = "#" + key;
-      a.dataset.track = key;
-      a.textContent = data.track;
-      nav.appendChild(a);
-    });
+  function setTrackExpanded(track, expanded) {
+    track.classList.toggle("collapsed", !expanded);
+    var title = track.querySelector(".track-title");
+    if (title) title.setAttribute("aria-expanded", String(expanded));
   }
 
   function renderHome() {
@@ -121,10 +120,10 @@
     links.forEach(function (a) {
       a.classList.toggle("active", a.dataset.track === trackKey && a.dataset.step === stepId);
     });
-    var topLinks = document.querySelectorAll(".topbar-tracks a");
-    topLinks.forEach(function (a) {
-      a.classList.toggle("active", a.dataset.track === trackKey);
-    });
+    if (trackKey) {
+      var currentTrack = document.querySelector('.track[data-track="' + trackKey + '"]');
+      if (currentTrack) setTrackExpanded(currentTrack, true);
+    }
   }
 
   function route() {
@@ -151,7 +150,6 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     buildSidebar();
-    buildTopbarTracks();
     route();
 
     var toggle = document.getElementById("sidebar-toggle");

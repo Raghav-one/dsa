@@ -1,7 +1,6 @@
 :root {
   --bg: #ffffff;
   --bg-sidebar: #ffffff;
-  --bg-topbar: #ffffff;
   --ink: #0f1115;
   --ink-soft: #454851;
   --ink-faint: #82858d;
@@ -10,7 +9,6 @@
   --accent-soft: #e8722f;
   --code-bg: #f6f7f8;
   --sidebar-width: 17rem;
-  --topbar-height: 3.2rem;
   --radius: 5px;
 }
 
@@ -18,7 +16,6 @@
   :root {
     --bg: #121316;
     --bg-sidebar: #121316;
-    --bg-topbar: #121316;
     --ink: #eeeff1;
     --ink-soft: #b4b7bf;
     --ink-faint: #7d808a;
@@ -42,63 +39,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Top bar */
-.topbar {
-  height: var(--topbar-height);
-  border-bottom: 1px solid var(--rule);
-  background: var(--bg-topbar);
-  display: flex;
-  align-items: center;
-  padding: 0 1.3rem;
-  position: sticky;
-  top: 0;
-  z-index: 30;
-}
-
-.topbar .brand {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 700;
-  font-size: 0.95rem;
-  color: var(--ink);
-  text-decoration: none;
-  letter-spacing: -0.01em;
-}
-
-.topbar .brand .mark {
-  width: 1.3rem;
-  height: 1.3rem;
-  border-radius: 4px;
-  background: var(--accent);
-  flex: 0 0 auto;
-}
-
-.topbar-tracks {
-  display: flex;
-  gap: 1.5rem;
-  margin-left: 2rem;
-}
-
-.topbar-tracks a {
-  font-size: 0.86rem;
-  color: var(--ink-soft);
-  text-decoration: none;
-  padding: 0.3rem 0;
-  border-bottom: 2px solid transparent;
-}
-
-.topbar-tracks a:hover { color: var(--ink); }
-.topbar-tracks a.active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-  font-weight: 600;
-}
-
 .app {
   display: flex;
-  min-height: calc(100vh - var(--topbar-height));
+  min-height: 100vh;
 }
+
+.main-shell { flex: 1; min-width: 0; }
 
 /* Sidebar */
 .sidebar {
@@ -108,8 +54,8 @@ body {
   background: var(--bg-sidebar);
   padding: 1.2rem 0.9rem 2.5rem;
   position: sticky;
-  top: var(--topbar-height);
-  height: calc(100vh - var(--topbar-height));
+  top: 0;
+  height: 100vh;
   overflow-y: auto;
   line-height: 1.25;
   font-size: 0.86rem;
@@ -139,9 +85,22 @@ body {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-faint) !important;
-  padding: 1rem 0.5rem 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 0.5rem 0.55rem;
   cursor: pointer;
 }
+
+.track-title::after {
+  content: "⌄";
+  font-size: 1rem;
+  line-height: 1;
+  font-weight: 500;
+  transform: rotate(0deg);
+  transition: transform 120ms ease;
+}
+.track.collapsed .track-title::after { transform: rotate(-90deg); }
 
 .track-title:hover {
   color: var(--ink-soft) !important;
@@ -153,6 +112,7 @@ body {
   margin: 0;
   padding: 0;
 }
+.track.collapsed .step-list { display: none; }
 
 .step-list a {
   display: block;
@@ -296,6 +256,7 @@ pre code { background: none; padding: 0; }
   padding: 1rem 1.2rem 0.5rem;
   margin: 1.6rem 0;
   overflow-x: auto;
+  max-width: 100%;
   background: var(--bg);
 }
 .diagram svg { margin: 0 !important; }
@@ -504,28 +465,32 @@ hr.rule {
 .sidebar-toggle { display: none; }
 
 @media (max-width: 860px) {
-  .app { display: block; }
-  .topbar-tracks { display: none; }
+  html, body { max-width: 100%; overflow-x: hidden; }
+  .app { display: block; max-width: 100%; overflow-x: hidden; }
+  .main-shell { width: 100vw; min-width: 0; max-width: 100vw; overflow-x: hidden; }
   .sidebar {
     position: fixed;
-    left: 0; top: var(--topbar-height); bottom: 0;
+    left: 0; top: 0; bottom: 0;
     transform: translateX(-100%);
     transition: transform 0.18s ease;
     z-index: 20;
     box-shadow: 2px 0 12px rgba(0,0,0,0.15);
-    height: calc(100vh - var(--topbar-height));
+    height: 100vh;
   }
   .sidebar.open { transform: translateX(0); }
-  .content-pane { max-width: 100%; padding: 1.5rem 1.3rem 5rem; }
+  .content-pane {
+    width: 100%; min-width: 0; max-width: 100%; overflow-x: hidden;
+    padding: 1.5rem 1.3rem 5rem;
+  }
   h1 { font-size: 1.5rem; }
 
   .dsa-diagram { padding: 0.8rem 0.9rem 0.65rem; }
-  .dsa-diagram svg { min-width: 29rem; }
+  .dsa-diagram svg { min-width: 0; }
 
   .sidebar-toggle {
     display: block;
     position: sticky;
-    top: var(--topbar-height);
+    top: 0;
     z-index: 15;
     background: var(--bg);
     border-bottom: 1px solid var(--rule);
