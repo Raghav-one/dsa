@@ -217,6 +217,29 @@ h1 {
   margin: 0 0 2.4rem;
 }
 
+.plain-definition {
+  margin: 1.35rem 0 1.25rem;
+  padding: 0.9rem 1rem 0.15rem;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--code-bg);
+}
+.plain-definition p { color: var(--ink); }
+
+.implementation {
+  margin: 0.85rem 0 1.15rem;
+  color: var(--ink-soft);
+  border-left: 2px solid var(--rule);
+  padding: 0.1rem 0 0.1rem 0.85rem;
+}
+.implementation summary {
+  cursor: pointer;
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+  font-weight: 650;
+}
+.implementation p { margin: 0.7rem 0 0.25rem; }
+
 h2 { font-size: 1.05rem; display: none; } /* h2 in body content is redundant with h1 per-step; hide */
 
 h3 {

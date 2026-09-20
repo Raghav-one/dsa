@@ -2,12 +2,12 @@
   var TRACK_ORDER = ["foundations", "structures", "advanced-structures", "patterns", "graphs", "dynamic-programming"];
 
   var TRACK_DESC = {
-    "foundations": "The cost model, recursion, and proof habits that let you predict whether an approach can work.",
-    "structures": "Arrays, hashes, linked lists, stacks, queues, trees, heaps, and tries — choose the shape before the algorithm.",
-    "advanced-structures": "Deques, search trees, range-query structures, caches, and probabilistic membership structures.",
-    "patterns": "Reusable moves for sorting, searching, intervals, recursion, and greedy choices.",
-    "graphs": "Model relationships, traverse safely, and choose the right shortest-path or connectivity tool.",
-    "dynamic-programming": "Turn repeated recursive work into a state, a transition, and an answer."
+    "foundations": "Learn how to estimate time and memory, reason about loops, and use input limits to reject an approach before you code it.",
+    "structures": "Learn what each structure stores, which operation is cheap, and when arrays, maps, lists, stacks, queues, trees, heaps, or tries are the right choice.",
+    "advanced-structures": "Use specialized structures when ordinary arrays and maps are too slow for repeated range queries, ordered lookup, caching, or compact membership tests.",
+    "patterns": "Recognize the recurring moves behind common problems: ordered pointers, moving windows, binary search, sorting, recursion, greedy choices, ranges, and bits.",
+    "graphs": "Turn relationships into vertices and edges, then choose the traversal or path algorithm whose guarantees match the problem.",
+    "dynamic-programming": "Define a subproblem precisely, reuse its answer, and choose an evaluation order that makes every needed state available."
   };
 
   function content() {
@@ -67,8 +67,8 @@
 
   function renderHome() {
     var pane = document.getElementById("content-pane");
-    var html = '<h1>DSA, from First Principles</h1>';
-    html += '<p class="subtitle">Every efficient solution begins with a model: what is stored, what changes, and what work is unavoidable. Pick a track.</p>';
+    var html = '<h1>Data Structures and Algorithms</h1>';
+    html += '<p class="subtitle">Start with the data you have and the operation you need. Each lesson explains what the concept is, why it helps, how it works, when it is the wrong tool, and the mistake that usually breaks an implementation.</p>';
     html += '<div class="landing-cards">';
     TRACK_ORDER.forEach(function (key) {
       var data = content()[key];

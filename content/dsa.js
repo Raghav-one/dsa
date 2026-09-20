@@ -129,9 +129,129 @@ window.SITE_CONTENT = window.SITE_CONTENT || {};
     return simple[id] || '';
   }
 
+  /* A short, literal definition comes before the detailed explanation. The
+     lessons remain technically precise, but a learner should not have to
+     decode a dense first paragraph to know what the concept names. */
+  var PLAIN_DEFINITIONS = {
+    'what-an-algorithm-costs': 'A complexity class says how the amount of work grows when the input gets bigger. It is a scaling estimate, not a stopwatch reading.',
+    'space-is-a-budget': 'Space complexity is the extra memory an algorithm needs while it runs, separate from the input and usually separate from the returned answer.',
+    'recursion-and-the-call-stack': 'Recursion solves a problem by calling the same function on a smaller version until a base case stops the calls.',
+    'invariants-and-correctness': 'A loop invariant is a fact that is true before the loop starts and stays true after every iteration. It is the reason the loop can be trusted.',
+    'reading-constraints': 'Constraint analysis means using input limits, such as n = 200,000, to rule out algorithms that would take too long or use too much memory.',
+    'arrays-and-locality': 'An array stores values next to each other, so an index is fast to read but inserting in the middle requires moving later values.',
+    'strings-as-arrays': 'Most string algorithms treat text as an ordered sequence. The important detail is whether the language lets you change that sequence in place.',
+    'linked-lists-and-pointers': 'A linked list stores each value in a separate node and connects nodes with links. You follow links instead of jumping to an index.',
+    'fast-and-slow-pointers': 'Two pointers moving at different speeds can reveal a loop in a linked list or find its middle without storing visited nodes.',
+    'stacks-and-monotonic-stacks': 'A monotonic stack keeps only unresolved values in increasing or decreasing order, so each new value can settle answers efficiently.',
+    'queues-and-bfs': 'A queue removes the oldest item first. That order makes breadth-first search visit every location one step away before locations two steps away.',
+    'hash-maps-and-sets': 'A hash set records whether a key exists. A hash map records a value for a key, such as a count or an earlier index.',
+    'trees-and-traversals': 'A binary tree gives each node up to two children. A traversal is simply a rule for the order in which you visit those nodes.',
+    'heaps-and-priority-queues': 'A heap keeps the smallest or largest item at the top without sorting every item. A priority queue exposes that top item repeatedly.',
+    'tries-and-prefixes': 'A trie stores words by shared character prefixes, which makes prefix lookup direct but can use a lot of memory.',
+    'linked-list-variants': 'Linked-list variants change which links each node stores: next only, previous plus next, or a tail that loops back to the head.',
+    'stacks-and-queues': 'A stack removes the newest item first; a queue removes the oldest item first. That single ordering choice changes which problems they solve.',
+    'deques-and-circular-buffers': 'A deque works at both ends. A circular buffer reuses a fixed array by wrapping its front and back positions around.',
+    'binary-search-trees': 'A binary search tree places smaller keys on the left and larger keys on the right, so a comparison tells you which branch to follow.',
+    'self-balancing-trees': 'A self-balancing search tree rearranges itself after changes so it does not become a long, slow chain.',
+    'b-trees-and-b-plus-trees': 'B-trees keep many keys in each node so a search needs fewer disk or page reads. B+ trees keep actual records in linked leaf nodes.',
+    'fenwick-trees': 'A Fenwick tree stores selected partial sums so you can update one value and ask for a prefix sum in logarithmic time.',
+    'segment-trees': 'A segment tree stores an aggregate, such as a sum or minimum, for many nested ranges of an array.',
+    'sparse-tables': 'A sparse table precomputes answers for fixed ranges whose lengths are powers of two. It is for data that will not change.',
+    'lru-cache': 'An LRU cache removes the item that has gone unused for the longest time while keeping lookup and recency updates fast.',
+    'skip-lists-and-bloom-filters': 'A skip list uses extra shortcut links to search quickly. A Bloom filter is a compact membership test that may say yes incorrectly but never says no incorrectly.',
+    'two-pointers': 'Two pointers keep two positions in the same sequence and move one or both based on a rule that makes discarded positions impossible answers.',
+    'sliding-window': 'A sliding window represents one continuous part of an array or string and moves its left and right edges instead of rebuilding that part each time.',
+    'binary-search': 'Binary search repeatedly cuts an ordered search space in half. It works when each comparison tells you which half cannot contain the answer.',
+    'sorting-as-preprocessing': 'Sorting puts related values next to each other or in a useful order, so a single scan can replace many pairwise comparisons.',
+    'divide-and-conquer': 'Divide and conquer splits a problem into smaller independent parts, solves them, then combines their results.',
+    'backtracking': 'Backtracking tries a choice, explores its consequences, undoes that choice, and then tries the next option.',
+    'greedy-and-exchange': 'A greedy algorithm makes the best-looking local choice now. It is correct only when you can prove that choice never blocks an optimal final answer.',
+    'prefix-sums': 'A prefix-sum array stores the total up to every position, so any fixed range sum becomes one subtraction.',
+    'intervals': 'An interval is a range with a start and an end. Before writing code, decide whether endpoints that touch count as overlapping.',
+    'bitwise-tools': 'Bit operations work on the individual 0 and 1 digits of an integer. A bitmask can represent a small set using one number.',
+    'modeling-a-graph': 'A graph represents things as vertices and their relationships as edges. Choosing directed, undirected, weighted, or unweighted edges is part of the solution.',
+    'dfs-and-components': 'Depth-first search follows one path as far as it can before returning. Repeating it from unseen nodes finds separate connected groups.',
+    'bfs-shortest-unweighted': 'Breadth-first search explores in layers. In an unweighted graph, the first time it reaches a node is through the fewest edges.',
+    'topological-sort': 'A topological order lists prerequisites before the work that depends on them. It exists only when a directed graph has no cycle.',
+    'dijkstra': 'Dijkstra’s algorithm finds cheapest paths by always processing the not-yet-final route with the smallest known cost.',
+    'union-find': 'Disjoint Set Union keeps track of which items belong to the same group as groups are merged over time.',
+    'minimum-spanning-tree': 'A minimum spanning tree connects every vertex with the least total edge weight, without requiring shortest routes from one vertex.',
+    'grid-as-a-graph': 'A grid becomes a graph when each usable cell is a vertex and each legal move to a neighbor is an edge.',
+    'recognizing-dp': 'Dynamic programming saves the answer for each repeated subproblem, so the program solves each distinct state once instead of many times.',
+    'state-transition-base': 'A DP state says exactly what one table entry means. A transition explains how smaller entries produce it, and base cases start the process.',
+    'memoization-vs-tabulation': 'Memoization fills states when recursive calls ask for them. Tabulation fills states in a planned order, usually with loops.',
+    'knapsack-and-subset': '0/1 knapsack chooses whether to take each item once while staying within a capacity limit and maximizing total value.',
+    'sequence-dp': 'Sequence DP compares prefixes of one or two ordered sequences, such as the first i characters of one string and first j of another.',
+    'lis-and-patience': 'The longest increasing subsequence is the longest ordered set of values that increases, even when its values are not adjacent in the input.',
+    'interval-dp': 'Interval DP stores an answer for every subrange and builds larger ranges from smaller ranges inside them.',
+    'dp-space-optimization': 'DP space optimization keeps only the earlier states that the next computation still needs, instead of retaining the whole table.'
+  };
+
+  /* The first explanation is deliberately conversational and procedural.
+     The original precise explanation remains available as implementation
+     detail for learners who are ready for the formal version. */
+  var PLAIN_SOLUTIONS = {
+    'what-an-algorithm-costs': 'First ask how many times the code can repeat as n grows. Keep the term that grows fastest: a loop over n items is O(n); two full nested loops are usually O(n²).',
+    'space-is-a-budget': 'List every structure created while the algorithm runs. If it grows with the input, include it. Two index variables stay O(1); a map that can hold every item is O(n).',
+    'recursion-and-the-call-stack': 'Make each call smaller, and stop at a simple base case. Trust the smaller call to return the right answer, then combine that answer with the current piece of work.',
+    'invariants-and-correctness': 'Before the loop, write one sentence about what the variables mean. After each update, check that the sentence is still true. At the end, use that sentence to justify the answer.',
+    'reading-constraints': 'Read n before choosing an algorithm. Estimate the work: for n near 100,000, avoid checking every pair; for n near 20, trying every subset may be acceptable.',
+    'arrays-and-locality': 'Use an array when you need quick access by position. Append at the end when possible. Expect a cost when inserting or deleting near the front because later values must shift.',
+    'strings-as-arrays': 'Walk through text with indexes when you need to compare characters. Build new text in an array or buffer when many changes are needed, then join it once.',
+    'linked-lists-and-pointers': 'Use a list when you already have the node before the change. Save the next link before changing any pointer, then reconnect the two affected nodes.',
+    'fast-and-slow-pointers': 'Move slow by one link and fast by two. If fast reaches the end, there is no loop. If they meet, there is a loop because fast gains one step each round.',
+    'stacks-and-monotonic-stacks': 'Keep indexes whose answer is still unknown. When a new value arrives, pop every index that the new value answers, record the answer, then push the new index.',
+    'queues-and-bfs': 'Put the start node in a queue. Take one node from the front, add each unseen neighbor to the back, and mark it seen immediately. This naturally visits nodes by distance.',
+    'hash-maps-and-sets': 'For each item, store the one fact you will need later: whether it was seen, how many times it appeared, or where it appeared. Look up that fact instead of scanning earlier items.',
+    'trees-and-traversals': 'For every node, decide what to do before its children, between its children, or after its children. Return a simple value for an empty child so parent calls can combine child results.',
+    'heaps-and-priority-queues': 'Put items in a min-heap when you repeatedly need the smallest item, or a max-heap for the largest. Remove the top only when you need it; do not sort the whole collection after every change.',
+    'tries-and-prefixes': 'Follow one child per character. Create a child when inserting a new word, and mark the final node as a complete word. A prefix is present if its path exists.',
+    'linked-list-variants': 'Choose singly linked for simple forward movement, doubly linked when you must remove a known node, and circular when work should continue from the end back to the start.',
+    'stacks-and-queues': 'Use a stack when the newest unfinished task must be handled next. Use a queue when the oldest waiting task must be handled next. Pick the removal order before writing code.',
+    'deques-and-circular-buffers': 'Use a deque when both ends matter. For a fixed-size queue, store front and back indexes and move an index back to zero after it reaches the last array slot.',
+    'binary-search-trees': 'Compare the target with the current node. Go left for a smaller target and right for a larger target. Stop when you find it or reach an empty child.',
+    'self-balancing-trees': 'After inserting or removing a key, check whether one side became much taller. Rotate a small part of the tree to shorten the tall side without changing the sorted order.',
+    'b-trees-and-b-plus-trees': 'Store many sorted keys in one node or page. Search inside that page, then follow one child page. Keeping more keys per page reduces slow storage reads.',
+    'fenwick-trees': 'Use the low bit of an index to jump across grouped sums. Update the few group totals that contain one position; query the few group totals that cover a prefix.',
+    'segment-trees': 'Build a tree where each node stores the answer for one range. For a query, combine only nodes that exactly cover pieces of the requested range. Update the path from one changed value to the root.',
+    'sparse-tables': 'Precompute answers for ranges of length 1, 2, 4, and so on. Answer a static range query by combining one or two precomputed blocks.',
+    'lru-cache': 'Use a map to find a cached key immediately and a doubly linked list to move that key to the most-recent end. When full, remove the node at the least-recent end.',
+    'skip-lists-and-bloom-filters': 'Use a skip list when random shortcut links are acceptable for fast ordered lookup. Use a Bloom filter only as a cheap first check: “not present” is certain, “present” needs verification.',
+    'two-pointers': 'Set two indexes, then move exactly one according to a rule. In a sorted two-sum problem, a sum that is too small means move left; a sum that is too large means move right.',
+    'sliding-window': 'Move the right edge to include a new item. If the window becomes invalid, move the left edge until it is valid again. Update the answer at the point the problem asks for it.',
+    'binary-search': 'Keep a range that still might contain the answer. Inspect the middle. Throw away the half that cannot work, and repeat until the range is empty or one answer remains.',
+    'sorting-as-preprocessing': 'Sort first when order makes comparisons local. Then scan from left to right, comparing the current item with the small amount of state you carried from earlier items.',
+    'divide-and-conquer': 'Split the input into smaller parts until each part is easy. Solve those parts, then do one controlled combine step. Make sure every split is strictly smaller than the original.',
+    'backtracking': 'Choose one option, update the current path, and recurse. When that branch returns, undo exactly that update before trying the next option. Stop early when a partial path cannot succeed.',
+    'greedy-and-exchange': 'Choose the locally best option only after you can explain why an optimal answer can be changed to include it. If you cannot make that exchange argument, look for DP or search instead.',
+    'prefix-sums': 'Build one running-total array once. To get the sum from left through right, subtract the total before left from the total through right.',
+    'intervals': 'Sort intervals by start. Keep one active interval. If the next interval overlaps under your endpoint rule, merge or count it; otherwise start a new active interval.',
+    'bitwise-tools': 'Think of each bit position as one yes/no flag. Use AND to test a flag, OR to set it, XOR to flip it, and shifts to move between bit positions.',
+    'modeling-a-graph': 'Name what counts as a node and what counts as a connection. Then write an adjacency list, add both directions for an undirected relationship, and attach weights only when costs differ.',
+    'dfs-and-components': 'Start at one unseen node, mark it seen, and keep following an unseen neighbor until no path remains. Repeat from another unseen node to find another component.',
+    'bfs-shortest-unweighted': 'Start with distance zero. When you add a neighbor to the queue, assign it the current distance plus one. The first assignment is the fewest-edge distance.',
+    'topological-sort': 'Count each node’s remaining prerequisites. Start with nodes that have zero. Remove one, reduce the counts of tasks it unlocks, and enqueue tasks whose count becomes zero.',
+    'dijkstra': 'Start with distance zero at the source. Always take the currently cheapest unfinished route from a min-heap, then try to improve each neighbor’s distance through that route.',
+    'union-find': 'Give every item a parent. To check whether two items are connected, follow parents to their roots. To merge groups, point one root at the other and compress paths as you go.',
+    'minimum-spanning-tree': 'Sort edges from cheapest to most expensive. Add an edge only if it connects two different groups. Stop after connecting every vertex; Union-Find tells you whether an edge would make a cycle.',
+    'grid-as-a-graph': 'For each cell, try the allowed direction offsets. Ignore out-of-bounds and blocked cells. Then use DFS for regions or BFS for the fewest number of moves.',
+    'recognizing-dp': 'Write the recursive answer first. When the same arguments appear again, save the result and reuse it. The saved arguments are the DP state.',
+    'state-transition-base': 'Write a full sentence for one table entry. List the smaller entries that can lead to it. Set the simplest entries by hand first, then fill the rest in dependency order.',
+    'memoization-vs-tabulation': 'Use memoization when the recursive version is easy to write and many states may never be reached. Use tabulation when you know a safe order and want to avoid call-stack depth.',
+    'knapsack-and-subset': 'For each item and each capacity, compare skipping the item with taking it. In a one-row version, walk capacity backward so one item cannot be used twice in the same pass.',
+    'sequence-dp': 'Let row i and column j describe prefixes. When the current characters match, use the diagonal result; otherwise choose the better result after skipping one character from one side.',
+    'lis-and-patience': 'Keep the smallest tail value seen for every possible subsequence length. For each number, replace the first tail that is at least that number, or append a new tail.',
+    'interval-dp': 'Start with the shortest ranges. For each larger range, try every possible final split or final action, using answers that were already computed for the smaller inside ranges.',
+    'dp-space-optimization': 'Look at which earlier table entries one new entry reads. Keep only those rows or variables, but do not overwrite an old value before every later calculation that needs it.'
+  };
+
   function lesson(id, title, problem, solution, limitation, gotcha, example) {
-    var body = '<div class="beat problem"><span class="label">Problem</span><p>' + problem + '</p></div>';
-    body += '<div class="beat solution"><span class="label">Solution</span><p>' + solution + '</p>';
+    var definition = PLAIN_DEFINITIONS[id] || '';
+    var plainSolution = PLAIN_SOLUTIONS[id] || solution;
+    var body = '<div class="plain-definition"><span class="label">In plain words</span><p>' + definition + '</p></div>';
+    body += '<div class="beat problem"><span class="label">Problem</span><p>' + problem + '</p></div>';
+    body += '<div class="beat solution"><span class="label">Solution</span><p>' + plainSolution + '</p>';
+    body += '<details class="implementation"><summary>Implementation detail</summary><p>' + solution + '</p></details>';
     if (example) body += '<pre><code>' + esc(example) + '</code></pre>';
     body += '</div>';
     body += diagramFor(id);
