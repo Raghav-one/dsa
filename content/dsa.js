@@ -245,15 +245,74 @@ window.SITE_CONTENT = window.SITE_CONTENT || {};
     'dp-space-optimization': 'Look at which earlier table entries one new entry reads. Keep only those rows or variables, but do not overwrite an old value before every later calculation that needs it.'
   };
 
+  /* A small, concrete situation gives the explanation something to attach to.
+     These are deliberately prose examples rather than another code listing. */
+  var PLAIN_EXAMPLES = {
+    'what-an-algorithm-costs': 'For a list of 10 items, checking every pair means about 100 comparisons. For one million items, it means about one trillion. That is why an O(n²) idea can look fine in a tiny test and still be unusable in production.',
+    'space-is-a-budget': 'If you check whether a list contains duplicates by putting every value in a set, the set can grow to the size of the list. If you use two indexes to compare a sorted list from both ends, the indexes never grow with the list.',
+    'recursion-and-the-call-stack': 'To sum [3, 5, 2], ask for the sum after the first value: 3 + sum([5, 2]). The calls wait in order until the empty list returns 0, then each waiting call adds its value on the way back.',
+    'invariants-and-correctness': 'In a “move all zeroes to the end” loop, the useful promise is: everything before write is non-zero and already in its final order. Each time you copy a non-zero value, that promise stays true.',
+    'reading-constraints': 'If a problem has 200,000 values, two nested loops may run tens of billions of times. If it has only 15 values, trying all 32,768 subsets is often reasonable.',
+    'arrays-and-locality': 'Reading scores[50_000] is one direct lookup. Inserting a score at position 0 means every existing score must move one position to the right, so the work grows with the array.',
+    'strings-as-arrays': 'To check whether “racecar” is a palindrome, compare the first and last characters, then move inward. To build a result one character at a time, append to an array and join once instead of repeatedly copying a string.',
+    'linked-lists-and-pointers': 'If you are standing on node A and it points to B, inserting X after A only changes A.next and X.next. Finding the 50,000th node first still requires walking through 50,000 links.',
+    'fast-and-slow-pointers': 'Imagine runners on a circular track. The fast runner gains one lap-step per round, so it must eventually catch the slow runner. On a straight track, the fast runner simply reaches the end.',
+    'stacks-and-monotonic-stacks': 'For temperatures, keep days that are still waiting for a warmer day. When a warmer day arrives, it resolves all colder days at the top of the stack, and each day is removed only once.',
+    'queues-and-bfs': 'In a maze, put the starting cell in the queue. All cells one move away are added before any cell two moves away, so the first time you reach the exit is the fewest moves.',
+    'hash-maps-and-sets': 'For two-sum, while reading 7 you ask whether the needed value, say 3, was seen earlier. A map turns that question into one lookup instead of scanning the earlier part of the array again.',
+    'trees-and-traversals': 'For a file tree, preorder can print a folder before its contents. For deleting a folder tree, postorder is useful because it handles all children before deleting their parent.',
+    'heaps-and-priority-queues': 'In a task scheduler, a new urgent task can be inserted without re-sorting every waiting task. The heap only repairs the route from that task to the top, where the most urgent task remains available.',
+    'tries-and-prefixes': 'If a dictionary has “app”, “apple”, and “apply”, all three words share the a → p → p path. Typing “app” follows that path once and immediately finds the words that can continue from it.',
+    'linked-list-variants': 'A music playlist that can move to the next or previous song benefits from prev and next links. A round-robin turn system benefits when the final participant points back to the first.',
+    'stacks-and-queues': 'Undo uses a stack because the most recent edit should be reversed first. A print queue uses a queue because the request that arrived first should be processed first.',
+    'deques-and-circular-buffers': 'For the maximum of each window of five values, you need to remove expired values from the front and add a new candidate at the back. A circular queue does the same without shifting a whole array after each removal.',
+    'binary-search-trees': 'Searching for 6 in a tree rooted at 8 first goes left because 6 is smaller. At 4 it goes right because 6 is larger. Each comparison discards one whole subtree when the tree stays balanced.',
+    'self-balancing-trees': 'If keys 1, 2, 3, 4 are inserted in sorted order into a plain BST, it can become a chain. A balancing tree rotates small pieces as it goes so later searches do not have to walk that chain.',
+    'b-trees-and-b-plus-trees': 'A database page can hold hundreds of keys. Looking through a few large pages is far cheaper than following hundreds of one-key nodes from disk, which is why database indexes commonly use this shape.',
+    'fenwick-trees': 'If a score at position 12 changes, you update only the partial totals that cover position 12. A query for the total through position 20 combines a few stored chunks instead of reading all 20 scores.',
+    'segment-trees': 'For an array of sales, a segment-tree node might store the sum from day 0 to day 7. A query from day 3 to day 12 combines only the nodes that cover exactly those pieces of time.',
+    'sparse-tables': 'For a fixed elevation map, precompute the minimum height in blocks of 1, 2, 4, and 8 cells. A later minimum query needs those stored blocks, but changing one elevation would invalidate many of them.',
+    'lru-cache': 'A browser cache may have room for three pages. Reading page B moves it to the recent end; when page D arrives, the page that has not been touched for the longest time is the one removed.',
+    'skip-lists-and-bloom-filters': 'A Bloom filter can quickly reject a username that definitely was not seen before. If it says a username may exist, check the real database because several different usernames can set the same bits.',
+    'two-pointers': 'In sorted [1, 3, 4, 7, 9], looking for 10 starts with 1 + 9. The sum is 10, so stop. Looking for 12 gives 1 + 9 too small, so move only the left pointer to a larger value.',
+    'sliding-window': 'For the longest substring with no repeated character, extend the right edge one character at a time. When a repeated character appears, move the left edge past its earlier copy until the window is valid again.',
+    'binary-search': 'To find the first day a service became slow, ask about a middle day. If that day is already slow, the first slow day is in the left half; otherwise it is in the right half.',
+    'sorting-as-preprocessing': 'For meeting intervals, sort by start time. Once sorted, the only interval that can overlap the next meeting is the active meeting with the farthest end seen so far.',
+    'divide-and-conquer': 'Merge sort splits eight values into two groups of four until each group has one value. It then merges already-sorted pairs, then groups of four, then the final two groups.',
+    'backtracking': 'To generate all subsets of [A, B], choose whether to include A, then choose whether to include B. After recording one completed subset, undo the last choice and follow the other branch.',
+    'greedy-and-exchange': 'For choosing the most non-overlapping meetings, taking the meeting that ends first leaves the most time for later meetings. The proof shows any optimal schedule can swap its first meeting for that one without reducing its count.',
+    'prefix-sums': 'For [4, 9, 1, 7], prefix totals are [0, 4, 13, 14, 21]. The sum from index 1 through 3 is 21 - 4 = 17, so the original values are not scanned again.',
+    'intervals': 'With closed intervals, [1, 2] and [2, 3] share the point 2 and overlap. With half-open time slots, [1, 2) ends before [2, 3) begins, so they do not overlap.',
+    'bitwise-tools': 'If bit 3 represents “admin access”, setting it with OR adds that permission without affecting the others. Testing with AND tells you whether that one bit is currently set.',
+    'modeling-a-graph': 'A flight map has airports as nodes and flights as directed weighted edges. A friendship network has people as nodes and usually undirected unweighted edges. The same story word “connection” can mean different graph types.',
+    'dfs-and-components': 'On a map of islands, start DFS at one land cell and visit every land cell connected to it. When that search ends, you have counted one island; start again at the next unseen land cell.',
+    'bfs-shortest-unweighted': 'If a social-network search starts at you, BFS sees direct friends before friends-of-friends. Therefore the first time it finds a person is through the fewest relationship links.',
+    'topological-sort': 'A compiler cannot build an application before it builds the library the application imports. Zero-indegree nodes are the tasks with nothing left to wait for; a cycle means tasks are waiting on each other forever.',
+    'dijkstra': 'For roads with non-negative travel times, the route currently known to take 4 minutes is processed before one known to take 7 minutes. A newly discovered 5-minute route can replace an earlier 8-minute guess.',
+    'union-find': 'As new roads are built, union the two towns at each road’s ends. To ask whether two towns are connected, compare their component roots instead of running a fresh road search every time.',
+    'minimum-spanning-tree': 'To wire several offices as cheaply as possible, choose the cheapest cable that connects two groups not yet connected. Skip a cheap cable if it merely makes a loop inside a group that is already connected.',
+    'grid-as-a-graph': 'In a maze, each open square is a node and moving up, down, left, or right is an edge. A wall means there is no edge through that direction.',
+    'recognizing-dp': 'Naive Fibonacci calculates fib(3) many times while calculating fib(5). Save fib(3) after the first calculation, and every later request can reuse that saved value.',
+    'state-transition-base': 'For climbing stairs, let dp[i] mean the number of ways to reach step i. You can reach step i from i - 1 or i - 2, so add those answers after defining the starting steps.',
+    'memoization-vs-tabulation': 'A top-down edit-distance function may only visit prefix pairs needed by the answer. A bottom-up table fills every smaller prefix pair first, so it never needs recursive calls.',
+    'knapsack-and-subset': 'With one item of weight 3 and value 10, capacity 5 can either keep its old best value or take the item and add the best value for capacity 2. Going backward prevents that same item from being counted twice.',
+    'sequence-dp': 'For the strings “cat” and “car”, matching c and a extends the diagonal answer. At t versus r, the table compares the best result after dropping one character from either string.',
+    'lis-and-patience': 'For [3, 5, 2, 6], keep tails [3, 5], replace 3 with 2 to get [2, 5], then append 6. The length three is correct even though the tails array is not the exact chosen subsequence history.',
+    'interval-dp': 'For matrix multiplication, the cost of multiplying matrices from left through right depends on where the final split is. Compute two-matrix ranges first so a larger range can try each final split using known smaller costs.',
+    'dp-space-optimization': 'In a grid-path table, a cell may only need the value above it and the value to its left. Keeping one rolling row can replace the whole grid, as long as the old “above” value is read before it is overwritten.'
+  };
+
   function lesson(id, title, problem, solution, limitation, gotcha, example) {
     var definition = PLAIN_DEFINITIONS[id] || '';
     var plainSolution = PLAIN_SOLUTIONS[id] || solution;
+    var plainExample = PLAIN_EXAMPLES[id] || '';
     var body = '<div class="plain-definition"><span class="label">In plain words</span><p>' + definition + '</p></div>';
     body += '<div class="beat problem"><span class="label">Problem</span><p>' + problem + '</p></div>';
     body += '<div class="beat solution"><span class="label">Solution</span><p>' + plainSolution + '</p>';
     body += '<details class="implementation"><summary>Implementation detail</summary><p>' + solution + '</p></details>';
     if (example) body += '<pre><code>' + esc(example) + '</code></pre>';
     body += '</div>';
+    if (plainExample) body += '<div class="plain-example"><span class="label">Example</span><p>' + plainExample + '</p></div>';
     body += diagramFor(id);
     body += '<div class="beat limitation"><span class="label">Limitation</span><p>' + limitation + '</p></div>';
     body += '<div class="gotcha"><span class="label">Gotcha</span><p>' + gotcha + '</p></div>';
